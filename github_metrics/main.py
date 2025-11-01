@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 import requests
+from dotenv import load_dotenv
 
 LOGGER = logging.getLogger(__name__)
 GRAPHQL_URL = "https://api.github.com/graphql"
@@ -536,6 +537,7 @@ def format_number(value: int) -> str:
 
 def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(message)s")
+    load_dotenv()
     try:
         config = Config.from_env()
     except ConfigError as exc:
