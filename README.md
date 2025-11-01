@@ -68,6 +68,27 @@ Below are the example cards generated from the bundled sample data:
 
 ![Languages card](stats/languages.svg)
 
+## Embed in Markdown
+To publish the generated cards in a README or wiki, point Markdown image tags at the raw files on your default branch. Replace `<owner>` and `<repo>` with your repository coordinates:
+
+```markdown
+![GitHub overview](https://raw.githubusercontent.com/<owner>/<repo>/main/stats/overview.svg)
+![Languages used](https://raw.githubusercontent.com/<owner>/<repo>/main/stats/languages.svg)
+```
+
+### Dark mode rendering
+The bundled templates support GitHub’s dark theme by targeting the `#gh-dark-mode-only` selector. Use a `<picture>` element so viewers automatically see the dark variant when their theme requests it:
+
+```html
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/<owner>/<repo>/main/stats/overview.svg#gh-dark-mode-only">
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/<owner>/<repo>/main/stats/overview.svg">
+  <img alt="GitHub overview stats" src="https://raw.githubusercontent.com/<owner>/<repo>/main/stats/overview.svg">
+</picture>
+```
+
+Repeat the pattern for `stats/languages.svg` (or any additional cards). GitHub-flavored Markdown renders the `<picture>` element correctly in profiles and documentation.
+
 ## Tips & troubleshooting
 - GitHub GraphQL rate limits are lower for unauthenticated requests; always provide a token.
 - Contribution totals rely on the `contributionsCollection` field. If the token lacks permission to examine the target account, the total may come back as zero.

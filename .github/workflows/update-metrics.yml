@@ -1,0 +1,51 @@
+name: Update GitHub Metrics
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    env:
+      ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+      EXCLUDED_REPO: ${{ secrets.EXCLUDED_REPO }}
+      EXCLUDED_LANGS: ${{ secrets.EXCLUDED_LANGS }}
+      EXCLUDE_FORKED: ${{ secrets.EXCLUDE_FORKED }}
+      LANGS_LIMIT: ${{ secrets.LANGS_LIMIT }}
+      METRICS_COMMIT_USERNAME: ${{ secrets.METRICS_COMMIT_USERNAME }}
+      METRICS_COMMIT_EMAIL: ${{ secrets.METRICS_COMMIT_EMAIL }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        run: pip install uv
+
+      - name: Sync dependencies
+        run: uv sync
+
+      - name: Generate metrics
+        run: uv run python -m github_metrics
+
+      - name: Commit and push if metrics changed
+        run: |
+          git config user.name "${METRICS_COMMIT_USERNAME:-github-actions[bot]}"
+          git config user.email "${METRICS_COMMIT_EMAIL:-github-actions[bot]@users.noreply.github.com}"
+          changes="$(git status --porcelain stats)"
+          if [ -n "$changes" ]; then
+            git add stats
+            git commit -m "chore: update GitHub metrics"
+            git push
+          else
+            echo "No metrics changes to commit."
+          fi
