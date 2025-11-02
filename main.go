@@ -21,6 +21,7 @@ type LanguageStat struct {
 	Color      string
 	Size       int
 	Percentage float64
+	DelayMs    int
 }
 
 type TemplateData struct {
@@ -47,10 +48,9 @@ type Config struct {
 	LangsLimit    int
 }
 
-// Repository GraphQL response structure
 type Repository struct {
 	Name           githubv4.String
-	IsFork         githubv4.Boolean // ✅ Correct field (NOT "Fork")
+	IsFork         githubv4.Boolean
 	Owner          struct{ Login githubv4.String }
 	StargazerCount githubv4.Int
 	ForkCount      githubv4.Int
@@ -78,7 +78,6 @@ type Query struct {
 }
 
 func main() {
-	// Load .env in development (optional)
 	_ = godotenv.Load()
 
 	cfg, err := loadConfig()
@@ -92,7 +91,6 @@ func main() {
 		log.Fatalf("❌ Failed to fetch stats: %v", err)
 	}
 
-	// Filter excluded languages
 	filtered := make(map[string]int)
 	for lang, size := range langStats {
 		if !cfg.ExcludedLangs[lang] {
@@ -100,7 +98,6 @@ func main() {
 		}
 	}
 
-	// Sort and limit
 	type kv struct{ K string; V int }
 	var sorted []kv
 	for k, v := range filtered {
@@ -111,15 +108,16 @@ func main() {
 		sorted = sorted[:cfg.LangsLimit]
 	}
 
-	// Compute percentages
 	total := 0
 	for _, kv := range sorted {
 		total += kv.V
 	}
 
-	// Build language list with colors
-	colors := []string{"#f1e05a", "#3178c6", "#3e4053", "#e34c26", "#563d7c", "#2b7489", "#427819", "#b07219", "#d62929", "#999999"}
-	languageList := []LanguageStat{}
+	colors := []string{
+		"#f1e05a", "#3178c6", "#3e4053", "#e34c26", "#563d7c",
+		"#2b7489", "#427819", "#b07219", "#d62929", "#999999",
+	}
+	languageList := make([]LanguageStat, 0, len(sorted))
 	for i, kv := range sorted {
 		pct := 0.0
 		if total > 0 {
@@ -134,10 +132,10 @@ func main() {
 			Color:      color,
 			Size:       kv.V,
 			Percentage: pct,
+			DelayMs:    i * 120,
 		})
 	}
 
-	// Render both SVGs
 	if err := renderLanguagesSVG(TemplateData{cfg.GitHubActor, languageList}); err != nil {
 		log.Fatalf("❌ Failed to render languages.svg: %v", err)
 	}
@@ -232,7 +230,6 @@ func fetchAllStats(ctx context.Context, client *githubv4.Client, cfg *Config) (m
 				log.Printf("⏭️ Skipping excluded repo: %s", repoName)
 				continue
 			}
-			// ✅ Use IsFork only
 			if cfg.ExcludeForked && bool(repo.IsFork) {
 				log.Printf("🔀 Skipping forked repo: %s", repoName)
 				continue
@@ -274,8 +271,7 @@ func renderTemplate(templateFile, outputFile string, data interface{}) error {
 		return err
 	}
 	tmpl := template.Must(template.New(templateFile).Funcs(template.FuncMap{
-		"mul": func(a, b float64) float64 { return a * b },
-		"add": func(a, b float64) float64 { return a + b },
+		"mul":    func(a, b float64) float64 { return a * b },
 		"printf": fmt.Sprintf,
 	}).ParseFiles("templates/" + templateFile))
 
@@ -295,4 +291,5 @@ var knownLanguageColors = map[string]string{
 	"Vue":          "#2c3e50", "R": "#198ce7", "Scala": "#dc322f", "Haskell": "#5e5086",
 	"Elixir":       "#6e4a7e", "Lua": "#000080", "Perl": "#0298c3", "Objective-C": "#438eff",
 	"Assembly":     "#6E4C13", "PowerShell": "#012456", "Dart": "#0175C2", "Groovy": "#e69f56",
+	"Dockerfile":   "#384d54", "Cuda": "#3A4E3A",
 }
