@@ -252,7 +252,9 @@ class StatsCollector:
                 )
 
             if owner_name is None:
-                owner_name = owner.get("name") or owner.get("login") or self.config.login
+                owner_name = (
+                    owner.get("name") or owner.get("login") or self.config.login
+                )
 
             repositories = owner.get("repositories") or {}
             nodes = repositories.get("nodes") or []
@@ -279,9 +281,15 @@ class StatsCollector:
                 end_cursor = page_info.get("endCursor")
 
                 if has_next and name_with_owner:
-                    owner_part = name_with_owner.split("/")[0] if "/" in name_with_owner else self.config.login
+                    owner_part = (
+                        name_with_owner.split("/")[0]
+                        if "/" in name_with_owner
+                        else self.config.login
+                    )
                     edges.extend(
-                        self._fetch_additional_languages(owner_part, repo_name, end_cursor)
+                        self._fetch_additional_languages(
+                            owner_part, repo_name, end_cursor
+                        )
                     )
 
                 filtered_languages: List[LanguageShare] = []
@@ -329,7 +337,8 @@ class StatsCollector:
 
                 language_summary = (
                     ", ".join(
-                        f"{item.name}: {format_number(item.size)}" for item in filtered_languages
+                        f"{item.name}: {format_number(item.size)}"
+                        for item in filtered_languages
                     )
                     if filtered_languages
                     else "no tracked languages"
@@ -454,10 +463,8 @@ class TemplateRenderer:
         progress_markup = self._build_progress_markup(metrics.languages)
         lang_list_markup = self._build_lang_list(metrics.languages)
 
-        output = (
-            template.replace("{{ progress }}", progress_markup).replace(
-                "{{ lang_list }}", lang_list_markup
-            )
+        output = template.replace("{{ progress }}", progress_markup).replace(
+            "{{ lang_list }}", lang_list_markup
         )
 
         output_path = self.config.output_dir / "languages.svg"
