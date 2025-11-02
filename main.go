@@ -16,6 +16,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
+// LanguageStat holds per-language data for languages.svg
 type LanguageStat struct {
 	Name       string
 	Color      string
@@ -24,21 +25,24 @@ type LanguageStat struct {
 	DelayMs    int
 }
 
+// TemplateData for languages.svg
 type TemplateData struct {
 	Name      string
 	Languages []LanguageStat
 }
 
+// OverviewStats for overview.svg
 type OverviewStats struct {
 	Name          string
 	Stars         int
 	Forks         int
 	Repos         int
-	Contributions string
-	LinesChanged  string
-	Views         string
+	Contributions string // e.g., "1,475"
+	LinesChanged  string // "0" (not available)
+	Views         string // "0" (not available)
 }
 
+// Config from environment
 type Config struct {
 	GitHubActor   string
 	AccessToken   string
@@ -48,6 +52,7 @@ type Config struct {
 	LangsLimit    int
 }
 
+// GraphQL: Repository data
 type Repository struct {
 	Name           githubv4.String
 	IsFork         githubv4.Boolean
@@ -65,7 +70,8 @@ type Repository struct {
 	} `graphql:"languages(first: 20)"`
 }
 
-type Query struct {
+// GraphQL: Main repo list query
+type RepoQuery struct {
 	User struct {
 		Repositories struct {
 			PageInfo struct {
@@ -74,6 +80,17 @@ type Query struct {
 			}
 			Nodes []Repository
 		} `graphql:"repositories(first: 100, after: $cursor, orderBy: {field: UPDATED_AT, direction: DESC})"`
+	} `graphql:"user(login: $login)"`
+}
+
+// GraphQL: Contributions query (you provided this)
+type ContributionsQuery struct {
+	User struct {
+		ContributionsCollection struct {
+			ContributionCalendar struct {
+				TotalContributions githubv4.Int
+			}
+		}
 	} `graphql:"user(login: $login)"`
 }
 
@@ -86,11 +103,30 @@ func main() {
 	}
 
 	client := createClient(cfg.AccessToken)
+
+	// Fetch repo and language stats
 	langStats, overview, err := fetchAllStats(context.Background(), client, cfg)
 	if err != nil {
-		log.Fatalf("❌ Failed to fetch stats: %v", err)
+		log.Fatalf("❌ Failed to fetch repo stats: %v", err)
 	}
 
+	// Fetch real contributions
+	var contribQuery ContributionsQuery
+	err = client.Query(context.Background(), &contribQuery, map[string]interface{}{
+		"login": githubv4.String(cfg.GitHubActor),
+	})
+	if err != nil {
+		log.Printf("⚠️ Warning: Failed to fetch contributions: %v", err)
+		overview.Contributions = "0"
+	} else {
+		overview.Contributions = formatNumber(int(contribQuery.User.ContributionsCollection.ContributionCalendar.TotalContributions))
+	}
+
+	// Set unavailable metrics to "0" (as in your example)
+	overview.LinesChanged = "0"
+	overview.Views = "0"
+
+	// Process languages
 	filtered := make(map[string]int)
 	for lang, size := range langStats {
 		if !cfg.ExcludedLangs[lang] {
@@ -136,6 +172,7 @@ func main() {
 		})
 	}
 
+	// Render outputs
 	if err := renderLanguagesSVG(TemplateData{cfg.GitHubActor, languageList}); err != nil {
 		log.Fatalf("❌ Failed to render languages.svg: %v", err)
 	}
@@ -199,18 +236,13 @@ func createClient(token string) *githubv4.Client {
 
 func fetchAllStats(ctx context.Context, client *githubv4.Client, cfg *Config) (map[string]int, OverviewStats, error) {
 	stats := make(map[string]int)
-	overview := OverviewStats{
-		Name:          cfg.GitHubActor,
-		Contributions: "—",
-		LinesChanged:  "—",
-		Views:         "—",
-	}
+	overview := OverviewStats{Name: cfg.GitHubActor}
 
 	var cursor *githubv4.String
 	login := githubv4.String(cfg.GitHubActor)
 
 	for {
-		var query Query
+		var query RepoQuery
 		err := client.Query(ctx, &query, map[string]interface{}{
 			"login":  login,
 			"cursor": cursor,
@@ -281,6 +313,24 @@ func renderTemplate(templateFile, outputFile string, data interface{}) error {
 	}
 	defer file.Close()
 	return tmpl.Execute(file, data)
+}
+
+// formatNumber adds commas: 1475 → "1,475"
+func formatNumber(n int) string {
+	in := strconv.Itoa(n)
+	numOfDigits := len(in)
+	if numOfDigits <= 3 {
+		return in
+	}
+
+	var result strings.Builder
+	for i, digit := range in {
+		if (numOfDigits-i)%3 == 0 && i != 0 {
+			result.WriteString(",")
+		}
+		result.WriteRune(digit)
+	}
+	return result.String()
 }
 
 var knownLanguageColors = map[string]string{
