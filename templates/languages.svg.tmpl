@@ -1,0 +1,88 @@
+<svg width="360" height="210" xmlns="http://www.w3.org/2000/svg">
+<style>
+svg {
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji;
+  font-size: 14px;
+  line-height: 21px;
+}
+#background {
+  width: calc(100% - 10px);
+  height: calc(100% - 10px);
+  fill: white;
+  stroke: rgb(225, 228, 232);
+  stroke-width: 1px;
+  rx: 6px;
+  ry: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  #background {
+    fill: #0d1117;
+    stroke: #30363d;
+    stroke-width: 0.5px;
+  }
+}
+foreignObject {
+  width: calc(100% - 10px - 32px);
+  height: calc(100% - 10px - 32px);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+th {
+  padding: 0.5em;
+  padding-top: 0;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgb(3, 102, 214);
+}
+@media (prefers-color-scheme: dark) {
+  th { color: #58a6ff; }
+}
+td {
+  padding: 0.25em;
+  font-size: 12px;
+  line-height: 18px;
+  color: rgb(88, 96, 105);
+}
+@media (prefers-color-scheme: dark) {
+  td { color: #c9d1d9; }
+}
+.lang-name { text-align: left; }
+.lang-pct  { text-align: right; }
+</style>
+
+<rect x="5" y="5" id="background" />
+
+<!-- Progress Bar -->
+<g transform="translate(21, 21)">
+  {{ $totalWidth := 318.0 }}
+  {{ $x := 0.0 }}
+  {{ range .Languages }}
+    <rect x="{{ $x }}" y="0" width="{{ mul $totalWidth .Percentage }}" height="8"
+          fill="{{ .Color }}" />
+    {{ $x = add $x (mul $totalWidth .Percentage) }}
+  {{ end }}
+</g>
+
+<!-- Language Table -->
+<foreignObject x="21" y="36" width="318" height="168">
+  <div xmlns="http://www.w3.org/1999/xhtml">
+    <table>
+      <thead>
+        <tr><th colspan="2">{{ .Name }}'s Top Languages</th></tr>
+      </thead>
+      <tbody>
+        {{ range .Languages }}
+        <tr>
+          <td class="lang-name">{{ .Name }}</td>
+          <td class="lang-pct">{{ printf "%.1f" (mul .Percentage 100) }}%</td>
+        </tr>
+        {{ end }}
+      </tbody>
+    </table>
+  </div>
+</foreignObject>
+</svg>
