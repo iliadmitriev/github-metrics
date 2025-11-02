@@ -123,7 +123,7 @@ func main() {
 	}
 
 	// Set unavailable metrics to "0" (as in your example)
-	overview.LinesChanged = "0"
+	// LinesChanged is now calculated in fetchAllStats
 	overview.Views = "0"
 
 	// Process languages
@@ -237,6 +237,7 @@ func createClient(token string) *githubv4.Client {
 func fetchAllStats(ctx context.Context, client *githubv4.Client, cfg *Config) (map[string]int, OverviewStats, error) {
 	stats := make(map[string]int)
 	overview := OverviewStats{Name: cfg.GitHubActor}
+	totalLinesChanged := 0
 
 	var cursor *githubv4.String
 	login := githubv4.String(cfg.GitHubActor)
@@ -271,12 +272,28 @@ func fetchAllStats(ctx context.Context, client *githubv4.Client, cfg *Config) (m
 			overview.Forks += int(repo.ForkCount)
 			overview.Repos++
 
+			// Collect languages and their sizes for logging (excluded languages are filtered out)
+			var languages []string
 			for _, edge := range repo.Languages.Edges {
 				lang := string(edge.Node.Name)
-				stats[lang] += int(edge.Size)
+				size := int(edge.Size)
+				
+				// Skip excluded languages for both stats and logging
+				if cfg.ExcludedLangs[lang] {
+					continue
+				}
+				
+				stats[lang] += size
+				totalLinesChanged += size
+				languages = append(languages, fmt.Sprintf("%s:%d", lang, size))
 			}
 
-			log.Printf("✅ Processed: %s (⭐ %d, 🍴 %d)", repoName, repo.StargazerCount, repo.ForkCount)
+			languagesStr := strings.Join(languages, ", ")
+			if languagesStr == "" {
+				languagesStr = "none"
+			}
+
+			log.Printf("✅ Processed: %s (⭐ %d, 🍴 %d, 📚 %s)", repoName, repo.StargazerCount, repo.ForkCount, languagesStr)
 		}
 
 		pageInfo := query.User.Repositories.PageInfo
@@ -286,6 +303,9 @@ func fetchAllStats(ctx context.Context, client *githubv4.Client, cfg *Config) (m
 		cursor = &pageInfo.EndCursor
 		time.Sleep(100 * time.Millisecond)
 	}
+
+	// Set the total lines changed in the overview
+	overview.LinesChanged = formatNumber(totalLinesChanged)
 
 	return stats, overview, nil
 }

@@ -174,3 +174,4 @@ poetry.toml
 pyrightconfig.json
 
 github-metrics
+github-metrics-go
