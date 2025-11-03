@@ -180,6 +180,24 @@ func main() {
 		log.Fatalf("❌ Failed to render overview.svg: %v", err)
 	}
 
+	// Final summary message with all collected statistics (similar to Python version)
+	log.Println("\n📊 Final GitHub Statistics Summary:")
+	log.Printf("👤 User: %s", overview.Name)
+	log.Printf("⭐ Total Stars: %s", formatNumber(overview.Stars))
+	log.Printf("🍴 Total Forks: %s", formatNumber(overview.Forks))
+	log.Printf("📈 Total Contributions: %s", overview.Contributions)
+	log.Printf("💻 Total Lines Changed: %s", overview.LinesChanged)
+	log.Printf("👀 Total Repository Views: %s", overview.Views)
+	log.Printf("📦 Total Repositories: %s", formatNumber(overview.Repos))
+	log.Println("🛠️ Top Languages:")
+	for i, lang := range languageList {
+		if i >= 5 { // Show top 5 languages like in Python version
+			break
+		}
+		log.Printf("   %d. %s (%.2f%%)", i+1, lang.Name, lang.Percentage*100)
+	}
+	log.Println("✅ GitHub metrics collection completed successfully!")
+
 	log.Println("✅ Successfully generated stats/languages.svg and stats/overview.svg")
 }
 
