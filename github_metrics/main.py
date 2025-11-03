@@ -10,7 +10,7 @@ from typing import Dict, List, Optional
 import requests
 from dotenv import load_dotenv
 
-LOGGER = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 GRAPHQL_URL = "https://api.github.com/graphql"
 DEFAULT_LANGUAGE_COLOR = "#ededed"
 
@@ -270,7 +270,7 @@ class StatsCollector:
                     (name_with_owner or "").lower(),
                 }
                 if self.config.excluded_repos & lower_repo_names:
-                    LOGGER.info("Skipping repository %s (excluded).", name_with_owner)
+                    logger.info("⏭️ Skipping repository %s (excluded).", name_with_owner)
                     continue
 
                 languages_block = node.get("languages") or {}
@@ -343,8 +343,8 @@ class StatsCollector:
                     if filtered_languages
                     else "no tracked languages"
                 )
-                LOGGER.info(
-                    "Repo %s — stars=%s forks=%s languages=%s",
+                logger.info(
+                    "Repo %s — ⭐ stars=%s 🍴 forks=%s 💻 languages=%s",
                     name_with_owner,
                     format_number(stars),
                     format_number(forks),
@@ -404,7 +404,7 @@ class StatsCollector:
                 {"login": self.config.login},
             )
         except GitHubAPIError as exc:
-            LOGGER.warning("Failed to fetch contributions: %s", exc)
+            logger.warning("⚠️ Failed to fetch contributions: %s", exc)
             return 0
 
         user = data.get("user")
@@ -469,7 +469,7 @@ class TemplateRenderer:
 
         output_path = self.config.output_dir / "languages.svg"
         output_path.write_text(output, encoding="utf-8")
-        LOGGER.info("Wrote %s", output_path)
+        logger.info("💾 Wrote %s", output_path)
 
     def render_overview(self, metrics: MetricsResult) -> None:
         template_path = self.config.templates_dir / "overview.svg"
@@ -491,7 +491,7 @@ class TemplateRenderer:
 
         output_path = self.config.output_dir / "overview.svg"
         output_path.write_text(output, encoding="utf-8")
-        LOGGER.info("Wrote %s", output_path)
+        logger.info("💾 Wrote %s", output_path)
 
     def _build_progress_markup(self, languages: List[LanguageShare]) -> str:
         if not languages:
@@ -548,7 +548,7 @@ def main() -> None:
     try:
         config = Config.from_env()
     except ConfigError as exc:
-        LOGGER.error("Configuration error: %s", exc)
+        logger.error("❌ Configuration error: %s", exc)
         sys.exit(1)
 
     client = GraphQLClient(config.token)
@@ -557,12 +557,26 @@ def main() -> None:
     try:
         metrics = collector.run()
     except (ConfigError, GitHubAPIError) as exc:
-        LOGGER.error("Failed to collect GitHub metrics: %s", exc)
+        logger.error("❌ Failed to collect GitHub metrics: %s", exc)
         sys.exit(1)
 
     renderer = TemplateRenderer(config)
     renderer.render_languages(metrics)
     renderer.render_overview(metrics)
+
+    # Final summary message with all collected statistics
+    logger.info("\n📊 Final GitHub Statistics Summary:")
+    logger.info("👤 User: %s", metrics.display_name)
+    logger.info("⭐ Total Stars: %s", format_number(metrics.total_stars))
+    logger.info("🍴 Total Forks: %s", format_number(metrics.total_forks))
+    logger.info("📈 Total Contributions: %s", format_number(metrics.total_contributions))
+    logger.info("💻 Total Lines Changed: %s", format_number(metrics.total_lines_changed))
+    logger.info("👀 Total Repository Views: %s", format_number(metrics.total_views))
+    logger.info("📦 Total Repositories: %s", format_number(metrics.repository_count))
+    logger.info("🛠️ Top Languages:")
+    for i, lang in enumerate(metrics.languages[:5], 1):  # Show top 5 languages
+        logger.info("   %d. %s (%.2f%%)", i, lang.name, lang.percent)
+    logger.info("✅ GitHub metrics collection completed successfully!")
 
 
 if __name__ == "__main__":
