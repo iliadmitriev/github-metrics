@@ -132,15 +132,15 @@ div.ellipsis {
 
 <div>
 <span class="progress">
-<span class="progress-item" style="background-color: #3572A5; width: 58.62%;"></span><span class="progress-item" style="background-color: #00ADD8; width: 13.71%;"></span><span class="progress-item" style="background-color: #f34b7d; width: 8.96%;"></span><span class="progress-item" style="background-color: #f1e05a; width: 3.99%;"></span><span class="progress-item" style="background-color: #b07219; width: 3.53%;"></span><span class="progress-item" style="background-color: #F05138; width: 3.14%;"></span><span class="progress-item" style="background-color: #89e051; width: 2.72%;"></span><span class="progress-item" style="background-color: #41b883; width: 2.62%;"></span><span class="progress-item" style="background-color: #3178c6; width: 1.43%;"></span><span class="progress-item" style="background-color: #384d54; width: 0.67%;"></span><span class="progress-item" style="background-color: #555555; width: 0.29%;"></span><span class="progress-item" style="background-color: #dea584; width: 0.10%;"></span>
+<span class="progress-item" style="background-color: #3572A5; width: 58.56%;"></span><span class="progress-item" style="background-color: #00ADD8; width: 13.70%;"></span><span class="progress-item" style="background-color: #f34b7d; width: 8.95%;"></span><span class="progress-item" style="background-color: #f1e05a; width: 3.99%;"></span><span class="progress-item" style="background-color: #b07219; width: 3.53%;"></span><span class="progress-item" style="background-color: #F05138; width: 3.14%;"></span><span class="progress-item" style="background-color: #89e051; width: 2.72%;"></span><span class="progress-item" style="background-color: #41b883; width: 2.62%;"></span><span class="progress-item" style="background-color: #3178c6; width: 1.43%;"></span><span class="progress-item" style="background-color: #384d54; width: 0.67%;"></span><span class="progress-item" style="background-color: #555555; width: 0.29%;"></span><span class="progress-item" style="background-color: #dea584; width: 0.10%;"></span>
 </span>
 </div>
 
 <ul>
 
-<li style="animation-delay: 0ms"><span class="lang">Python</span><span class="percent">58.62%</span></li>
-<li style="animation-delay: 120ms"><span class="lang">Go</span><span class="percent">13.71%</span></li>
-<li style="animation-delay: 240ms"><span class="lang">C++</span><span class="percent">8.96%</span></li>
+<li style="animation-delay: 0ms"><span class="lang">Python</span><span class="percent">58.56%</span></li>
+<li style="animation-delay: 120ms"><span class="lang">Go</span><span class="percent">13.70%</span></li>
+<li style="animation-delay: 240ms"><span class="lang">C++</span><span class="percent">8.95%</span></li>
 <li style="animation-delay: 360ms"><span class="lang">JavaScript</span><span class="percent">3.99%</span></li>
 <li style="animation-delay: 480ms"><span class="lang">Java</span><span class="percent">3.53%</span></li>
 <li style="animation-delay: 600ms"><span class="lang">Swift</span><span class="percent">3.14%</span></li>
