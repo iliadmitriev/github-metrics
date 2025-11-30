@@ -132,24 +132,24 @@ div.ellipsis {
 
 <div>
 <span class="progress">
-<span class="progress-item" style="background-color: #3572A5; width: 58.56%;"></span><span class="progress-item" style="background-color: #00ADD8; width: 13.70%;"></span><span class="progress-item" style="background-color: #f34b7d; width: 8.95%;"></span><span class="progress-item" style="background-color: #f1e05a; width: 3.99%;"></span><span class="progress-item" style="background-color: #b07219; width: 3.53%;"></span><span class="progress-item" style="background-color: #F05138; width: 3.14%;"></span><span class="progress-item" style="background-color: #89e051; width: 2.72%;"></span><span class="progress-item" style="background-color: #41b883; width: 2.62%;"></span><span class="progress-item" style="background-color: #3178c6; width: 1.43%;"></span><span class="progress-item" style="background-color: #384d54; width: 0.67%;"></span><span class="progress-item" style="background-color: #555555; width: 0.29%;"></span><span class="progress-item" style="background-color: #dea584; width: 0.10%;"></span>
+<span class="progress-item" style="background-color: #3572A5; width: 58.48%;"></span><span class="progress-item" style="background-color: #00ADD8; width: 13.68%;"></span><span class="progress-item" style="background-color: #f34b7d; width: 8.94%;"></span><span class="progress-item" style="background-color: #f1e05a; width: 3.98%;"></span><span class="progress-item" style="background-color: #b07219; width: 3.52%;"></span><span class="progress-item" style="background-color: #F05138; width: 3.14%;"></span><span class="progress-item" style="background-color: #89e051; width: 2.71%;"></span><span class="progress-item" style="background-color: #41b883; width: 2.62%;"></span><span class="progress-item" style="background-color: #3178c6; width: 1.43%;"></span><span class="progress-item" style="background-color: #384d54; width: 0.67%;"></span><span class="progress-item" style="background-color: #555555; width: 0.29%;"></span><span class="progress-item" style="background-color: #199f4b; width: 0.23%;"></span>
 </span>
 </div>
 
 <ul>
 
-<li style="animation-delay: 0ms"><span class="lang">Python</span><span class="percent">58.56%</span></li>
-<li style="animation-delay: 120ms"><span class="lang">Go</span><span class="percent">13.70%</span></li>
-<li style="animation-delay: 240ms"><span class="lang">C++</span><span class="percent">8.95%</span></li>
-<li style="animation-delay: 360ms"><span class="lang">JavaScript</span><span class="percent">3.99%</span></li>
-<li style="animation-delay: 480ms"><span class="lang">Java</span><span class="percent">3.53%</span></li>
+<li style="animation-delay: 0ms"><span class="lang">Python</span><span class="percent">58.48%</span></li>
+<li style="animation-delay: 120ms"><span class="lang">Go</span><span class="percent">13.68%</span></li>
+<li style="animation-delay: 240ms"><span class="lang">C++</span><span class="percent">8.94%</span></li>
+<li style="animation-delay: 360ms"><span class="lang">JavaScript</span><span class="percent">3.98%</span></li>
+<li style="animation-delay: 480ms"><span class="lang">Java</span><span class="percent">3.52%</span></li>
 <li style="animation-delay: 600ms"><span class="lang">Swift</span><span class="percent">3.14%</span></li>
-<li style="animation-delay: 720ms"><span class="lang">Shell</span><span class="percent">2.72%</span></li>
+<li style="animation-delay: 720ms"><span class="lang">Shell</span><span class="percent">2.71%</span></li>
 <li style="animation-delay: 840ms"><span class="lang">Vue</span><span class="percent">2.62%</span></li>
 <li style="animation-delay: 960ms"><span class="lang">TypeScript</span><span class="percent">1.43%</span></li>
 <li style="animation-delay: 1080ms"><span class="lang">Dockerfile</span><span class="percent">0.67%</span></li>
 <li style="animation-delay: 1200ms"><span class="lang">C</span><span class="percent">0.29%</span></li>
-<li style="animation-delay: 1320ms"><span class="lang">Rust</span><span class="percent">0.10%</span></li>
+<li style="animation-delay: 1320ms"><span class="lang">Vim Script</span><span class="percent">0.23%</span></li>
 
 </ul>
 
